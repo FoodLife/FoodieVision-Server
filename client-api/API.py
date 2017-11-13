@@ -12,5 +12,7 @@ class foodievision(Reasource):
         parser.add_argument('userid',type=str, required=True, location='json')
         args=parser.parse_arge(strict=True)
         submission={'image': args['image'], 'userid':args['userid']}
-        #check if it is database already, maybe not if we don't care
-        #
+        #store picture locally and store filepath in sql database
+        #return id number assigned to picture sql entry
+        #then have AI process picture and store analysis in sql database.  
+        #the second post request will then send the analysis results.
