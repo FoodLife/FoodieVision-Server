@@ -33,8 +33,10 @@ def API():
         f.write(base64.b64decode(submission['image']))
 	os.chdir("/home/ec2-user/seefood-core-ai/")
         bashCommand = "python find_food.py /home/ec2-user/images/"+filepath+"/"+filename
+	
 	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 	output, error = process.communicate()
+	
 	response =output
     return jsonify(response)
 
