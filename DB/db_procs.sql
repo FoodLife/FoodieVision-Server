@@ -22,10 +22,35 @@ CREATE PROCEDURE create_user(
 
   END;
 
+DROP PROCEDURE IF EXISTS change_password;
+
+CREATE PROCEDURE change_password(
+  p_user_token varchar(15),
+  p_new_password varchar(255)
+)
+  BEGIN
+    if valid_token(p_user_token) THEN
+      update USERS
+      set PASSWORD = p_new_password
+      where USER_TOKEN = p_user_token;
+      commit;
+      if valid_password(
+          (select user_name from USERS where user_token = p_user_token),
+            p_new_password
+      )THEN
+        select 1 from dual;
+      ELSE
+        select -1 from dual;
+      END IF;
+      else
+        select -1 from dual;
+    END IF;
+  END;
+
 DROP PROCEDURE IF EXISTS create_picture;
 
 CREATE PROCEDURE create_picture(
-  p_user_token  int,
+  p_user_token varchar(15),
   p_analysis varchar(20),
   p_confidence float
 )
@@ -55,7 +80,7 @@ CREATE PROCEDURE create_picture(
 DROP PROCEDURE IF EXISTS create_favorite;
 
 CREATE PROCEDURE create_favorite(
-  p_user_token int,
+  p_user_token varchar(15),
   p_picture_id int
 )
   BEGIN
@@ -92,7 +117,7 @@ CREATE PROCEDURE login(
   p_password  VARCHAR(255)
 )
 BEGIN
-  declare l_token int;
+  declare l_token varchar(255);
 
   if valid_password(p_user_name,p_password) THEN
 
@@ -105,6 +130,8 @@ BEGIN
       update USERS
       set USER_TOKEN = new_user_token()
       where USER_NAME = p_user_name;
+
+      commit;
 
     END IF;
 
@@ -123,31 +150,28 @@ Create FUNCTION valid_user(
   p_user_name varchar(30)) returns boolean
   BEGIN
     return exists(
-       select user_name from USERS WHERE
-          user_name = p_user_name
+      select user_name from USERS WHERE
+        user_name = p_user_name
+        AND ifnull(end_date, sysdate() + 1) > sysdate()
     );
   END;
 
 drop function if exists new_user_token;
 
-create function new_user_token() returns int
+create function new_user_token() returns varchar(255)
   BEGIN
-    DECLARE l_token int;
-    DECLARE valid varchar(1);
-    select floor (rand() * (2147483647 - 1000000000) + 1000000000) into l_token;
+    DECLARE l_token varchar(255);
 
-    select if(l_token in(
-      select user_token from USERS
-    ),'N','Y')
-    into valid;
+    DECLARE valid boolean;
 
-    while valid <> 'Y' DO
-      select floor (rand() * (2147483647 - 1000000000) + 1000000000) into l_token;
+    set valid = false;
 
-      select if(l_token in(
-        select user_token from USERS
-      ),'N','Y')
-      into valid;
+    while not valid DO
+      set l_token =conv(floor(rand() * 3656158440062975), 10, 36) ;
+
+      set valid = l_token not in(
+        select ifnull(user_token,-1) from USERS
+      );
 
     END WHILE;
 
@@ -156,7 +180,7 @@ create function new_user_token() returns int
 
 drop function if exists logout;
 
-create function logout(p_user_token  int) returns boolean
+create function logout(p_user_token varchar(15)) returns boolean
 
   BEGIN
 
@@ -170,21 +194,17 @@ create function logout(p_user_token  int) returns boolean
 
 drop function if exists valid_token;
 
-create function valid_token(p_token int) returns boolean
+create function valid_token(p_token varchar(15)) returns boolean
   BEGIN
     declare valid varchar(1);
 
     if(p_token is not null) then
 
-      select if(p_token in(
-      select user_token from USERS
-    ),'Y','N')
-      into valid;
-
-      if valid = 'Y' THEN
-        return true;
-      END IF;
+      return p_token in(
+        select ifnull(user_token,-1) from USERS
+      );
     end if;
+
     return false;
   END;
 
@@ -237,4 +257,33 @@ create function in_favorites(p_user_id int, p_picture_id  int) returns boolean
       );
   END;
 
-drop function IF EXISTS disable_user;
+drop procedure if exists delete_favorite;
+
+create procedure delete_favorite(
+  p_user_token varchar(15),
+  p_picture_id int)
+  BEGIN
+    if exists(
+      select *
+      from FAVORITES
+      where
+        user_id = (
+          select user_id from USERS where user_token = p_user_token
+        )
+        AND picture_id = p_picture_id
+    ) THEN
+
+      delete from FAVORITES
+      where picture_id = p_picture_id
+      AND  user_id = (
+          select user_id from USERS where user_token = p_user_token
+      );
+
+      commit;
+
+      select 1 from dual;
+
+    ELSE
+      select -1 from dual;
+    END IF;
+  END;
