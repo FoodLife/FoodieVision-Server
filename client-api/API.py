@@ -5,7 +5,10 @@ import base64
 import subprocess
 import random
 app = Flask(__name__)
-
+    app.config['MYSQL_DATABASE_USER'] = 'foodies'
+    #if we add a password
+    #app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
+    app.config['MYSQL_DATABASE_DB'] = 'test'
 
 @app.route('/api/v1', methods=('GET', 'POST'))
 def API():

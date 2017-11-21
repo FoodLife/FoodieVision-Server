@@ -51,8 +51,8 @@ DROP PROCEDURE IF EXISTS create_picture;
 
 CREATE PROCEDURE create_picture(
   p_user_token varchar(15),
-  p_analysis varchar(20),
-  p_confidence float
+  p_food_confidence varchar(20),
+  p_not_food_confidence float
 )
   BEGIN
 
@@ -61,17 +61,19 @@ CREATE PROCEDURE create_picture(
       INSERT INTO PICTURES  (
         USER_ID,
         CREATION_DATE,
-        ANALYSIS,
-        CONFIDENCE)
+        CONFIDENCE_IS_FOOD,
+        CONFIDENCE_IS_NOT_FOOD)
       VALUES (
         (select user_id from USERS where user_token = p_user_token),
         sysdate(),
-        p_analysis,
-        p_confidence
+        p_food_confidence,
+        p_not_food_confidence
       );
       COMMIT;
 
-      SELECT LAST_INSERT_ID() as 'picture_id';
+      select USER_ID,PICTURE_ID
+      from PICTURES
+      where picture_ID = LAST_INSERT_ID();
     ELSE
       select -1 from dual;
     END IF;
@@ -178,17 +180,27 @@ create function new_user_token() returns varchar(255)
     return l_token;
   END;
 
-drop function if exists logout;
+drop PROCEDURE if exists logout;
 
-create function logout(p_user_token varchar(15)) returns boolean
+create PROCEDURE logout(p_user_token varchar(15))
 
   BEGIN
 
-  update USERS
-  set user_token = null
-  where user_token = p_user_token;
+  if valid_token(p_user_token) THEN
 
-  return true;
+    update USERS
+    set user_token = null
+    where user_token = p_user_token;
+
+    commit;
+
+    select 1 from dual;
+
+  ELSE
+
+    select -1 from dual;
+
+  END IF;
 
   END;
 
