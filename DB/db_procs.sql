@@ -52,7 +52,8 @@ DROP PROCEDURE IF EXISTS create_picture;
 CREATE PROCEDURE create_picture(
   p_user_token varchar(15),
   p_food_confidence varchar(20),
-  p_not_food_confidence float
+  p_not_food_confidence float,
+  p_is_food varchar(1)
 )
   BEGIN
 
@@ -62,12 +63,14 @@ CREATE PROCEDURE create_picture(
         USER_ID,
         CREATION_DATE,
         CONFIDENCE_IS_FOOD,
-        CONFIDENCE_IS_NOT_FOOD)
+        CONFIDENCE_IS_NOT_FOOD,
+        IS_FOOD)
       VALUES (
         (select user_id from USERS where user_token = p_user_token),
         sysdate(),
         p_food_confidence,
-        p_not_food_confidence
+        p_not_food_confidence,
+        p_is_food_
       );
       COMMIT;
 
