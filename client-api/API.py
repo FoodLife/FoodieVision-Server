@@ -1,45 +1,100 @@
 from flask import Flask, request, jsonify, json
 from flask_restful import Resource, Api, reqparse
+from flaskext.mysql import MySQL
+from foodiedb import foodie_db
+from seefood import see_food
+from PIL import Image
+from io import BytesIO
+from foodiedb_config import init_db
+import numpy
 import os
 import base64
 import subprocess
 import random
+import sys
+
+sys.path.insert(0, '/home/ec2-user/Foodie')
 app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'foodies'
-#if we add a password
-#app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
-app.config['MYSQL_DATABASE_DB'] = 'test'
+init_db(app)
 
-@app.route('/api/v1', methods=('GET', 'POST'))
-def API():
-    if request.method == 'GET':
-        response = "get response"
-    else:  # POST
-	parser = reqparse.RequestParser()
-        parser.add_argument('image', type=str, required=False, location='json')
-        parser.add_argument('userid', type=int, required=False, location='json')
-	args = parser.parse_args() # not working for some reason, parser only likes to put null into the args
-	#args needs to be a dictionary of the image and userid, userid will be checked by database
-	#a new folder will be made if it does not already exist for the user, then a name for the image
-	#will be used to keep track of different images
-        filename="id"+str(random.randrange(1,10000000))+".jpg" #pic id ret from database
-        filepath="userid" #user id ret from database
-        submission={'image':'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'}
-	#^test encoded image to use in the mean time
-       	filepath =filepath
-	os.chdir("/home/ec2-user/images/")
-	
-	if not os.path.isdir(filepath+"/"):
-		os.makedirs(filepath+"/")
-	os.chdir(filepath+"/")
-        f= open(filename,"w+")
-        f.write(base64.b64decode(submission['image']))
-	os.chdir("/home/ec2-user/seefood-core-ai/")
-        bashCommand = "python find_food.py /home/ec2-user/images/"+filepath+"/"+filename
-	
-	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-	output, error = process.communicate()
-	
-	response =output
-    return jsonify(response)
+ai = see_food()
+ai.__init__()
+mysql = MySQL()
+mysql.__init__(app)
 
+
+@app.route('/foodies/create_user', methods=['POST'])
+def make_user():
+	if request.method == 'POST':
+		data = request.get_json()
+		if "user_name" in data and "password" in data:
+			conn = mysql.connect()
+			result = foodie_db.create_user(conn, data["user_name"], data["password"])
+			conn.close()
+			if result > 0:
+				return jsonify(success=1, user_id=1)
+			return jsonify(success=0, result="username already in use")
+		return jsonify(success=-1, result="invalid parameters")
+
+
+@app.route('/foodies/login', methods=['POST'])
+def login():
+	if request.method == 'POST':
+		data = request.get_json()
+		if "user_name" in data and "password" in data:
+			conn = mysql.connect()
+			result = foodie_db.login(conn, data["user_name"], data["password"])
+			conn.close()
+			if result > 0:
+				return jsonify(success=1,result=result)
+			return jsonify(success=0,result="invalid login credentials")
+		return jsonify(success=-1,result ="invalid parameters")
+
+
+@app.route('/foodies/logout', methods=['POST'])
+def logout():
+	if request.method == 'POST':
+		data = request.get_json()
+		if "user_token" in data:
+			conn = mysql.connect()
+			result = foodie_db.logout(conn, data["user_token"])
+			conn.close()
+			if result > 0:
+				return jsonify(success=1, result=result)
+			return jsonify(success=0,result="no user to log out")
+		return jsonify(success=-1, result="invalid parameters")
+
+@app.route('/foodies/is_food',methods=['POST'])
+def is_food():
+	if request.method == 'POST':
+		data = request.get_json()
+		if "user_token" in data and "image" in data:
+			ai_result = ai.is_food(data["image"])
+			conn = mysql.connect()
+			analysis = numpy.array(ai_result[0])
+			is_food = 'Y' if ai_result[1] else 'N'
+			result = foodie_db.create_picture(conn,data["user_token"], analysis[0,0], analysis[0,1], is_food)
+			if not result  == 'exception':
+				folder = 'images/' + str(result[0]) + "/"
+				file_path = folder + str(result[1]) + ".jpg"
+				if not os.path.isdir(folder):
+					os.makedirs(folder)
+				image = Image.open(BytesIO(base64.b64decode(data["image"]))).convert('RGB')
+				image.save(file_path)
+
+				if result > 0:
+					return jsonify(success=1, result= is_food)
+				return jsonify(success=0, result= "invalid user")
+			return jsonify(success=-1,result='db error')
+		return jsonify(success=-1, result= "invalid parameters")
+
+@app.route('/hello', methods=('GET', 'POST'))
+def hello():
+	if request.method == 'POST' or request.method == 'GET':
+		data = request.get_json()
+
+		return jsonify(('HELLO WURLD ' + data["json"]), "test")
+
+
+if __name__ == "__main__":
+	app.run()

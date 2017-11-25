@@ -3,14 +3,14 @@ import tensorflow as tf
 import base64
 from io import BytesIO
 from PIL import Image
-
+from seefood_config import root_folder
 
 class see_food:
 
     def __init__(self):
         self.sess = tf.Session()
-        self.saver = tf.train.import_meta_graph('/home/ec2-user/seefood-core-ai/saved_model/model_epoch5.ckpt.meta')
-        self.saver.restore(self.sess, tf.train.latest_checkpoint('/home/ec2-user/seefood-core-ai/saved_model/'))
+        self.saver = tf.train.import_meta_graph(root_folder + '/saved_model/model_epoch5.ckpt.meta')
+        self.saver.restore(self.sess, tf.train.latest_checkpoint(root_folder + '/saved_model/'))
         self.graph = tf.get_default_graph()
         self.x_input = self.graph.get_tensor_by_name('Input_xn/Placeholder:0')
         self.keep_prob = self.graph.get_tensor_by_name('Placeholder:0')
@@ -26,5 +26,5 @@ class see_food:
 
         return (scores,np.argmax(scores) !=1)
 
-ai = see_food()
-print ai.is_food('''R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==''')
+#ai = see_food()
+#print ai.is_food('''R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==''')
