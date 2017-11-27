@@ -83,7 +83,7 @@ def is_food():
 				image.save(file_path)
 
 				if result > 0:
-					return jsonify(success=1, result= is_food)
+					return jsonify(success=1, result= is_food, confidence=analysis.tolist())
 				return jsonify(success=0, result= "invalid user")
 			return jsonify(success=-1,result='db error')
 		return jsonify(success=-1, result= "invalid parameters")
