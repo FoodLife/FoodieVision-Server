@@ -104,6 +104,10 @@ def is_food():
 def search():
 	if request.method == 'POST':
 		data = request.get_json()
+		conn = mysql.connect()
+		result = foodie_db.search(conn, data["user_token"],"","","","")
+		##search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food)
+		return jsonify(result)
 
 @app.route('/hello', methods=('GET', 'POST'))
 def hello():
