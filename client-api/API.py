@@ -81,9 +81,11 @@ def is_food():
 					os.makedirs(folder)
 				image = Image.open(BytesIO(base64.b64decode(data["image"]))).convert('RGB')
 				image.save(file_path)
-
+				confidence=analysis.tolist()
+                                foodieScore = max(max(confidence))
+				foodieScore=(foodieScore+5)/10
 				if result > 0:
-					return jsonify(success=1, result= is_food, confidence=analysis.tolist())
+					return jsonify(success=1, result= is_food, score=foodieScore)
 				return jsonify(success=0, result= "invalid user")
 			return jsonify(success=-1,result='db error')
 		return jsonify(success=-1, result= "invalid parameters")
