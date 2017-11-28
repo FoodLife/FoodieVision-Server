@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, json
+from flask import Flask, request, jsonify, json, send_from_directory
 from flask_restful import Resource, Api, reqparse
 from flaskext.mysql import MySQL
 from foodiedb import foodie_db
@@ -109,7 +109,7 @@ def hello():
 
 		return jsonify(('HELLO WURLD ' + data["json"]), "test")
 
-@app.route('/image/<image_name:image_name>')
+@app.route('/image/<path:image_name>')
 def get_image(image_name):
     return send_from_directory('images', image_name)
 
