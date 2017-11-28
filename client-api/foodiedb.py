@@ -91,3 +91,13 @@ class foodie_db:
             return cur.fetchall()
         except:
             return "exception"
+    @staticmethod
+    def get_user_pictures(connection,user_token):
+        try:
+            cur = connection.cursor()
+            string = "call search_pictures('{}',NULL,NULL,NULL,NULL)".format(user_token)
+	    cur.execute(string)
+            return cur.fetchall()
+        except:
+            return "exception"
+
