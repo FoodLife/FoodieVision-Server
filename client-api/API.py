@@ -86,8 +86,8 @@ def is_food():
 				image = Image.open(BytesIO(base64.b64decode(data["image"]))).convert('RGB')
 				image.save(file_path)
 				confidence=analysis.tolist()
- -              foodieScore = max(max(confidence))
- -				foodieScore=(foodieScore+5)/10
+ 			        foodieScore = max(max(confidence))
+				foodieScore=(foodieScore+5)/10
 				image.resize((128, 128), Image.BILINEAR).save(thumb_path)
 
 				confidence = analysis.tolist()
