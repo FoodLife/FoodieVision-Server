@@ -109,8 +109,10 @@ def hello():
 
 		return jsonify(('HELLO WURLD ' + data["json"]), "test")
 
-@app.route('/image/<image_name>')
-def get_image():
-	return jsonify(result=-1)
+@app.route('/image/<image_name:image_name>')
+def get_image(image_name):
+    return send_from_directory('images', image_name)
+
+
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')
