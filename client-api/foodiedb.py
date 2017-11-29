@@ -53,12 +53,12 @@ class foodie_db:
             return "exception"
 
     @staticmethod
-    def is_favorite(connection,user_token,picture_id):
+    def in_favorites(connection,user_token,picture_id):
         try:
             cur = connection.cursor()
-            string = "call is_favorite('{}','{}')".format(user_token,picture_id)
+            string = "call in_favorites('{}','{}')".format(user_token,picture_id)
             cur.execute(string)
-            return cur.fetchall()
+            return cur.fetchall()[0][0]
         except:
             return "exception"
 

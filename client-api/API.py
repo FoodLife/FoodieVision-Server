@@ -123,14 +123,31 @@ def search():
 		##search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food)
 		conn.close()
 		return jsonify(result=url)
+@app.route('/foodies/create_favorite', methods=['POST'])
+def create_favorites():
+        if request.method == 'POST':
+                data = request.get_json()
+                if "user_token" in data and "picture_id" in data:
+                        conn = mysql.connect()
+                        result = foodie_db.create_favorite(conn, data["user_token"], data["picture_id"])
+                        return jsonify(result)
 
-@app.route('/foodies/is_favorite', methods=['POST'])
-def is_favorite():
+@app.route('/foodies/delete_favorite', methods=['POST'])
+def delete_favorite():
+        if request.method == 'POST':
+                data = request.get_json()
+                if "user_token" in data and "picture_id" in data:
+                        conn = mysql.connect()
+                        result = foodie_db.delete_favorite(conn, data["user_token"], data["picture_id"])
+                        return jsonify(result)
+
+@app.route('/foodies/in_favorites', methods=['POST'])
+def in_favorites():
 	if request.method == 'POST':
                 data = request.get_json()
                 if "user_token" in data and "picture_id" in data:
                         conn = mysql.connect()
-                        result = foodie_db.is_favorite(conn, data["user_token"], data["picture_id"])
+                        result = foodie_db.in_favorites(conn, data["user_token"], data["picture_id"])
 			return jsonify(result)
 
 @app.route('/hello', methods=('GET', 'POST'))
