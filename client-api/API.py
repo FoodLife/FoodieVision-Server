@@ -105,7 +105,7 @@ def search():
 	if request.method == 'POST':
 		data = request.get_json()
 		conn = mysql.connect()
-		result = foodie_db.get_user_pictures(conn, data["user_token"])
+		result = foodie_db.search(conn, data["user_token"],None,None,None,None)
 
 		url = ["/" + str(x[0]) + ".jpg" for x in result]
 
