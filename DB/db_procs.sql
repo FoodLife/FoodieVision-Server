@@ -302,6 +302,7 @@ create procedure delete_favorite(
       select -1 from dual;
     END IF;
   END;
+drop procedure if exists search_pictures;
 
 CREATE PROCEDURE search_pictures(IN p_user_token         VARCHAR(15), IN p_user_name VARCHAR(30),
                                  IN p_creation_date_low  DATE, IN p_creation_date_high DATE, IN p_is_food VARCHAR(1))
@@ -347,52 +348,4 @@ CREATE PROCEDURE search_pictures(IN p_user_token         VARCHAR(15), IN p_user_
         p_is_food = pic.IS_FOOD
       );
   END;
-
-create PROCEDURE search_pictures(
-  p_user_token VARCHAR(15),
-  p_user_name varchar(30),
-  p_creation_date_low DATE,
-  p_creation_date_high date,
-  p_is_food varchar(1))
-  BEGIN
-    select user.USER_ID,pic.PICTURE_ID
-    from
-      PICTURES pic
-      join
-      USERS user
-      on pic.USER_ID = user.USER_ID
-    WHERE
-      (
-        (p_user_token IS NULL
-        and ('N' in
-          (
-           select
-            if('N' in (
-              SELECT ifnull(user.GLOBAL_PRIVACY_SETTING,'N')
-              from dual
-              where pic.USER_ID = user.USER_ID
-            ),
-               (select ifnull(pic.PRIVATE,'N')),
-               'Y')
-          )
-        )
-        )
-        or user.USER_TOKEN = p_user_token
-      )
-    AND
-      (p_user_name is null
-      or user.user_name = p_user_name)
-    AND
-      (
-        pic.CREATION_DATE BETWEEN
-          ifnull(p_creation_date_low,'1000-01-01')
-      AND
-        ifnull(p_creation_date_high,sysdate() + 1)
-      )
-    AND
-      (
-        p_is_food is NULL
-        OR
-        p_is_food = pic.IS_FOOD
-      );
-  END;
+  

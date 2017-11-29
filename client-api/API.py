@@ -106,8 +106,11 @@ def search():
 		data = request.get_json()
 		conn = mysql.connect()
 		result = foodie_db.get_user_pictures(conn, data["user_token"])
+
+		url = ["/" + str(x[0]) + ".jpg" for x in result]
+
 		##search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food)
-		return jsonify(result)
+		return jsonify(result=url)
 
 @app.route('/hello', methods=('GET', 'POST'))
 def hello():
