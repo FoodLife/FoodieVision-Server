@@ -121,7 +121,17 @@ def search():
 		url = ["/" + str(x[0]) + ".jpg" for x in result]
 
 		##search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food)
+		conn.close()
 		return jsonify(result=url)
+
+@app.route('/foodies/is_favorite', methods=['POST'])
+def logout():
+	if request.method == 'POST':
+                data = request.get_json()
+                if "user_token" in data and "picture_id" in data:
+                        conn = mysql.connect()
+                        result = foodie_db.is_favorite(conn, data["user_token"], data["picture_id"])
+
 
 @app.route('/hello', methods=('GET', 'POST'))
 def hello():
