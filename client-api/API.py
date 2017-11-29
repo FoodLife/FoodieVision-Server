@@ -125,13 +125,13 @@ def search():
 		return jsonify(result=url)
 
 @app.route('/foodies/is_favorite', methods=['POST'])
-def logout():
+def is_favorite():
 	if request.method == 'POST':
                 data = request.get_json()
                 if "user_token" in data and "picture_id" in data:
                         conn = mysql.connect()
                         result = foodie_db.is_favorite(conn, data["user_token"], data["picture_id"])
-
+			return jsonify(result)
 
 @app.route('/hello', methods=('GET', 'POST'))
 def hello():

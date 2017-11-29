@@ -53,6 +53,16 @@ class foodie_db:
             return "exception"
 
     @staticmethod
+    def is_favorite(connection,user_token,picture_id):
+        try:
+            cur = connection.cursor()
+            string = "call is_favorite('{}','{}')".format(user_token,picture_id)
+            cur.execute(string)
+            return cur.fetchall()
+        except:
+            return "exception"
+
+    @staticmethod
     def create_favorite(connection,user_token,picture_id):
         try:
             cur = connection.cursor()
@@ -84,7 +94,7 @@ class foodie_db:
 
     @staticmethod
     def search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food):
-##        try:
+        try:
             cur = connection.cursor()
 	    if user_token:
 		user_token= "'{}'".format(user_token)
@@ -109,6 +119,6 @@ class foodie_db:
             string = "call search_pictures({},{},{},{},{})".format(user_token,user_name,creation_date_low,creation_date_high,is_food)
             cur.execute(string)
             return cur.fetchall()
-  ##      except:
-    ##        return "exception"
+        except:
+            return "exception"
 
