@@ -1,8 +1,9 @@
-Group 1
-Jason Elting
-Clayton Horstman
-Noah Taylor
-Kyle Weinle
+# Group 1
+## FoodieVision
+### Jason Elting
+### Clayton Horstman
+### Noah Taylor
+### Kyle Weinle
 
 # FoodieVision-Server/
 	client-api/ : folder containing python flask API and database interface
