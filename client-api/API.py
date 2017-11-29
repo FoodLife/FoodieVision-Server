@@ -105,7 +105,18 @@ def search():
 	if request.method == 'POST':
 		data = request.get_json()
 		conn = mysql.connect()
-		result = foodie_db.search(conn, data["user_token"],None,None,None,None)
+		search_params = {"user_token":False, "user_name":False,"creation_date_low":False,"creation_date_high":False,"is_food":False}
+		if "user_token" in data:
+			search_params["user_token"]=data["user_token"]
+		if "user_name" in data:
+			search_params["user_name"]=data["user_name"]
+		if "creation_date_low" in data:
+                        search_params["creation_date_low"]=data["creation_date_low"]
+		if "creation_date_high" in data:
+                        search_params["creation_date_high"]=data["creation_date_high"]
+		if "is_food" in data:
+                        search_params["is_food"]=data["is_food"]
+		result = foodie_db.search(conn,search_params["user_token"],search_params["user_name"],search_params["creation_date_low"],search_params["creation_date_high"],search_params["is_food"])
 
 		url = ["/" + str(x[0]) + ".jpg" for x in result]
 

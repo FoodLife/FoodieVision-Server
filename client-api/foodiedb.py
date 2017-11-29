@@ -84,21 +84,31 @@ class foodie_db:
 
     @staticmethod
     def search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food):
-        try:
+##        try:
             cur = connection.cursor()
 	    if user_token:
-		 "'{}'".format(user_token)
+		user_token= "'{}'".format(user_token)
+	    else:
+		user_token="NULL"
 	    if user_name:
-                 "'{}'".format(user_name)
+                 user_name= "'{}'".format(user_name)
+            else:
+               	user_name="NULL"
             if creation_date_low:
-                 "'{}'".format(creation_date_low)
+                 creation_date_low="'{}'".format(creation_date_low)
+            else:
+               	creation_data_low="NULL"
             if creation_date_high:
-                 "'{}'".format(creation_date_high)
+                creation_date_high= "'{}'".format(creation_date_high)
+            else:
+               	creation_date_high="NULL"
             if is_food:
-                 "'{}'".format(is_food)
+                 is_food="'{}'".format(is_food)
+            else:
+               	is_food="NULL"
             string = "call search_pictures({},{},{},{},{})".format(user_token,user_name,creation_date_low,creation_date_high,is_food)
             cur.execute(string)
             return cur.fetchall()
-        except:
-            return "exception"
+  ##      except:
+    ##        return "exception"
 
