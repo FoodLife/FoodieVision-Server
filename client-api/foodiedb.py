@@ -122,3 +122,12 @@ class foodie_db:
         except:
             return "exception"
 
+    @staticmethod
+    def get_pic_info(connection,user_tokn,picture_id):
+        #try:
+            cur = connection.cursor()
+            string = "call picture_info('{}','{}')".format(user_tokn,picture_id)
+            cur.execute(string)
+            return cur.fetchall()[0]
+       # except:
+          #  return "exception"

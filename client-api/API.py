@@ -118,7 +118,7 @@ def search():
                         search_params["is_food"]=data["is_food"]
 		result = foodie_db.search(conn,search_params["user_token"],search_params["user_name"],search_params["creation_date_low"],search_params["creation_date_high"],search_params["is_food"])
 
-		url = ["/" + str(x[0]) + ".jpg" for x in result]
+		url = [x[0]for x in result]
 
 		##search(connection,user_token,user_name,creation_date_low,creation_date_high,is_food)
 		conn.close()
@@ -150,6 +150,18 @@ def in_favorites():
                         result = foodie_db.in_favorites(conn, data["user_token"], data["picture_id"])
 			return jsonify(result)
 
+
+@app.route('/foodies/imageinfo', methods=['POST'])
+def image_info():
+	if request.method == 'POST':
+		data = request.get_json()
+		conn = mysql.connect()
+		result = foodie_db.get_pic_info(conn,data["user_token"],data["picture_id"])
+		conn.close()
+		if not result == "exception":
+			return jsonify(success=1,favorite=result[0],owner = result[1],private=result[2],is_food=result[2])
+		return jsonify(success=0)
+
 @app.route('/hello', methods=('GET', 'POST'))
 def hello():
 	if request.method == 'POST' or request.method == 'GET':
@@ -157,7 +169,7 @@ def hello():
 
 		return jsonify(('HELLO WURLD ' + data["json"]), "test")
 
-@app.route('/image/<path:image_name>')
+@app.route('/foodies/image/<path:image_name>')
 def get_image(image_name):
     return send_from_directory('images', image_name)
 
