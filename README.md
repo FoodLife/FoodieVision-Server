@@ -3,12 +3,11 @@
 This API/Database is designed to run on an ec2 instance with the user ec2-user
 using python-flask and mysql
 
+## server currently is running on an ec2 instance at 34.232.146.205
+
 ## to get the server running do the following:
-0. dependencies need to be installed first `sudo yum install mysql
-1. `git clone https://github.com/FoodLife/FoodieVision-Server.git`
-2. `cd FoodieVision-Server/client-api/`
-3. sql stuff
-4. start the flask serever using `sudo FLASK_APP=API.py python -m flask run --host=0.0.0.0 --port=5000`
+dependencies `sudo yum install mysql
+start the flask serever using `sudo FLASK_APP=API.py python -m flask run --host=0.0.0.0 --port=5000`
 
 The application will need to know the exact ip address of the server, currently it is configured to run on our ec2 instance.
 
