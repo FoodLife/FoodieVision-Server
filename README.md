@@ -15,7 +15,7 @@ The sever uses json data passed through post requests, here is an example post r
 ```
 POST /foodies/login HTTP/1.1
 
-Host: localhost:5000
+Host: 34.232.146.205:5000
 User-Agent: curl/7.43.0
 Accept: */*
 Content-Type: application/json
