@@ -88,7 +88,7 @@ def is_food():
 				confidence=analysis.tolist()
  			        foodieScore = max(max(confidence))
 				foodieScore=(foodieScore+5)/10
-				image.resize((128, 128), Image.BILINEAR).save(thumb_path)
+##				image.resize((128, 128), Image.BILINEAR).save(thumb_path)
 
 				confidence = analysis.tolist()
 				foodieScore = max(max(confidence))
