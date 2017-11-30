@@ -348,4 +348,47 @@ CREATE PROCEDURE search_pictures(IN p_user_token         VARCHAR(15), IN p_user_
         p_is_food = pic.IS_FOOD
       );
   END;
-  
+
+drop procedure if exists in_favorites;
+
+create PROCEDURE in_favorites(p_user_token varchar(15), p_picture_id int)
+BEGIN
+  SELECT IF( EXISTS(
+             (SELECT *
+                   FROM FAVORITES fav
+                     JOIN USERS usr ON
+                      fav.USER_ID = usr.USER_ID
+                   WHERE
+                     usr.USER_TOKEN = p_user_token
+                     AND
+                     fav.PICTURE_ID = p_picture_id)
+             ), 'Y','N');
+END;
+
+
+drop procedure if EXISTS  picture_info;
+
+create procedure picture_info(p_user_token varchar(15),p_picture_id int)
+  BEGIN
+
+    select
+      if(in_favorites(p_picture_id,
+             (select USER_ID
+        from USERS
+        where USER_TOKEN = p_user_token)),
+        'Y','N'
+         ),
+      if(exists(
+        select * from PICTURES
+        WHERE USER_ID = (
+          SELECT USER_ID from USERS
+        WHERE USER_TOKEN = p_user_token
+         )
+         ),
+      'Y','N'),
+      ifnull(PICTURES.PRIVATE,'N'),
+      PICTURES.IS_FOOD
+      from
+        PICTURES
+    WHERE PICTURES.PICTURE_ID = p_picture_id;
+  END;
